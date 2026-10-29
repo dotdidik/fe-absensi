@@ -16,7 +16,7 @@ Dev server memakai HTTPS self-signed karena browser hanya mengizinkan GPS lewat 
 
 ## Deploy ke Netlify
 
-1. Ganti `GANTI-URL-BACKEND` di `netlify.toml` dengan URL situs backend.
+1. Pastikan URL backend di `netlify.toml` (redirect `/api/*`) benar — saat ini `https://be-absensi.netlify.app`.
 2. Netlify: *Add new site → Import an existing project* → pilih repo ini. Build command dan publish
    directory dibaca dari `netlify.toml` (`npm run build` → `dist`).
 3. Environment variable: `VITE_APP_TIMEZONE` (mis. `Asia/Makassar`), lalu deploy.

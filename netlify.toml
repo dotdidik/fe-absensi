@@ -3,10 +3,9 @@
   publish = "dist"
 
 # Teruskan API ke situs backend. Status 200 = proxy, jadi browser tetap melihat satu domain (tanpa CORS).
-# GANTI alamat di bawah dengan URL situs backend di Netlify.
 [[redirects]]
   from = "/api/*"
-  to = "https://GANTI-URL-BACKEND.netlify.app/api/:splat"
+  to = "https://be-absensi.netlify.app/api/:splat"
   status = 200
   force = true
 
