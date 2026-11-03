@@ -19,6 +19,13 @@ Dev server memakai HTTPS self-signed karena browser hanya mengizinkan GPS lewat 
 1. Pastikan URL backend di `netlify.toml` (redirect `/api/*`) benar — saat ini `https://be-absensi.netlify.app`.
 2. Netlify: *Add new site → Import an existing project* → pilih repo ini. Build command dan publish
    directory dibaca dari `netlify.toml` (`npm run build` → `dist`).
-3. Environment variable: `VITE_APP_TIMEZONE` (mis. `Asia/Makassar`), lalu deploy.
+3. Environment variable: `VITE_APP_TIMEZONE` (mis. `Asia/Makassar`) dan `VITE_NAMA_PUSKESMAS` (nama di layar antrean), lalu deploy.
 
 Di produksi, `/api/*` di-proxy oleh Netlify ke backend, jadi frontend dan API berada di satu domain.
+
+## Layar antrean ruang tunggu
+
+Buka `https://<situs>/layar` di TV/monitor (tanpa login), lalu klik tombol kuning sekali untuk masuk layar
+penuh dan mengaktifkan suara — browser mewajibkan satu klik sebelum boleh memutar suara. Setiap kali admin
+memanggil nomor, layar menyorot poli tersebut, membunyikan bel, dan mengumumkan nomornya (suara bahasa
+Indonesia bawaan browser; paling bagus di Chrome).

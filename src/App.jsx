@@ -8,6 +8,10 @@ import GantiPassword from "./pages/GantiPassword.jsx";
 import Harian from "./pages/admin/Harian.jsx";
 import Rekap from "./pages/admin/Rekap.jsx";
 import Pegawai from "./pages/admin/Pegawai.jsx";
+import Antrean from "./pages/admin/Antrean.jsx";
+import PoliDokter from "./pages/admin/PoliDokter.jsx";
+import Kunjungan from "./pages/admin/Kunjungan.jsx";
+import Layar from "./pages/Layar.jsx";
 
 function Layout() {
   const { user, loading, logout } = useAuth();
@@ -39,6 +43,9 @@ function Layout() {
               <NavLink to="/admin/harian">Rekap Harian</NavLink>
               <NavLink to="/admin/rekap">Rekap Bulanan</NavLink>
               <NavLink to="/admin/pegawai">Pegawai</NavLink>
+              <NavLink to="/admin/antrean">Antrean</NavLink>
+              <NavLink to="/admin/poli">Poli &amp; Dokter</NavLink>
+              <NavLink to="/admin/kunjungan">Kunjungan</NavLink>
             </>
           )}
         </nav>
@@ -63,6 +70,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      {/* Layar ruang tunggu: publik, tanpa login */}
+      <Route path="/layar" element={<Layar />} />
       <Route element={<Layout />}>
         <Route index element={<Absen />} />
         <Route path="riwayat" element={<Riwayat />} />
@@ -71,6 +80,9 @@ export default function App() {
           <Route path="harian" element={<Harian />} />
           <Route path="rekap" element={<Rekap />} />
           <Route path="pegawai" element={<Pegawai />} />
+          <Route path="antrean" element={<Antrean />} />
+          <Route path="poli" element={<PoliDokter />} />
+          <Route path="kunjungan" element={<Kunjungan />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
