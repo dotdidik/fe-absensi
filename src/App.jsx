@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { Navigate, NavLink, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "./auth.jsx";
+import Sidebar, { judulHalaman } from "./components/Sidebar.jsx";
 import Login from "./pages/Login.jsx";
 import Absen from "./pages/Absen.jsx";
 import Riwayat from "./pages/Riwayat.jsx";
@@ -18,46 +19,35 @@ function Layout() {
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const tutupMenu = useCallback(() => setMenuOpen(false), []);
+
   useEffect(() => setMenuOpen(false), [pathname]);
 
   if (loading) return <p className="center">Memuat...</p>;
   if (!user) return <Navigate to="/login" replace />;
 
   return (
-    <>
-      <header className={`topbar ${menuOpen ? "open" : ""}`}>
-        <div className="brand">🏥 Absensi Puskesmas</div>
-        <button
-          className="menu-toggle"
-          aria-label="Buka menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? "✕" : "☰"}
-        </button>
-        <nav>
-          <NavLink to="/" end>Absen</NavLink>
-          <NavLink to="/riwayat">Riwayat</NavLink>
-          {user.role === "admin" && (
-            <>
-              <NavLink to="/admin/harian">Rekap Harian</NavLink>
-              <NavLink to="/admin/rekap">Rekap Bulanan</NavLink>
-              <NavLink to="/admin/pegawai">Pegawai</NavLink>
-              <NavLink to="/admin/antrean">Antrean</NavLink>
-              <NavLink to="/admin/poli">Poli &amp; Dokter</NavLink>
-              <NavLink to="/admin/kunjungan">Kunjungan</NavLink>
-            </>
-          )}
-        </nav>
-        <div className="user">
-          <NavLink to="/password" title="Ganti password">{user.nama}</NavLink>
-          <button className="btn-link" onClick={logout}>Keluar</button>
-        </div>
-      </header>
-      <main className="container">
-        <Outlet />
-      </main>
-    </>
+    <div className="app-shell">
+      <Sidebar user={user} open={menuOpen} onClose={tutupMenu} onLogout={logout} />
+      <div className="app-main">
+        {/* Hanya tampil di layar kecil; di desktop sidebar selalu terlihat. */}
+        <header className="mobile-bar">
+          <button
+            className="menu-toggle"
+            aria-label="Buka menu"
+            aria-controls="sidebar"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(true)}
+          >
+            ☰
+          </button>
+          <span className="mobile-bar-judul">{judulHalaman(pathname)}</span>
+        </header>
+        <main className="container">
+          <Outlet />
+        </main>
+      </div>
+    </div>
   );
 }
 

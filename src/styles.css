@@ -23,20 +23,88 @@ h3 { font-size: 1.05rem; }
 .muted { color: var(--muted); }
 .small { font-size: 0.85rem; }
 
-/* Topbar */
-.topbar {
-  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
-  padding: 12px 24px; background: var(--primary); color: #fff;
+/* Layout: sidebar kiri + konten */
+.app-shell { display: flex; min-height: 100vh; }
+.app-main { flex: 1; min-width: 0; }
+.sidebar {
+  width: 264px; flex: none; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column; background: #0b4f40; color: #cfe5de;
 }
-.brand { font-weight: 700; }
-.topbar nav { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
-.topbar a { color: #e6f4f0; text-decoration: none; padding: 6px 12px; border-radius: 6px; }
-.topbar a.active, .topbar a:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
-.topbar .user { display: flex; align-items: center; gap: 8px; }
-.topbar .btn-link { color: #fff; }
-.menu-toggle {
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px; padding: 20px 18px; font-size: 1.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.sidebar-brand strong { display: block; font-size: 1rem; color: #fff; }
+.sidebar-brand span { display: block; font-size: 0.78rem; opacity: 0.75; }
+.sidebar-close {
   display: none; margin-left: auto; background: none; border: none; color: #fff;
-  font-size: 1.5rem; line-height: 1; padding: 4px 8px; cursor: pointer;
+  font-size: 1.2rem; padding: 4px 8px; cursor: pointer;
+}
+.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 12px 10px; }
+.nav-grup-judul {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px; border: none; border-radius: 8px;
+  background: none; color: inherit; font: inherit; font-size: 0.78rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; text-align: left;
+}
+.nav-grup-judul:hover { background: rgba(255, 255, 255, 0.06); }
+.nav-grup.aktif .nav-grup-judul { color: #fff; }
+.nav-ikon {
+  width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.nav-chevron { margin-left: auto; transition: transform 0.2s; }
+.nav-grup-judul[aria-expanded="false"] .nav-chevron { transform: rotate(-90deg); }
+.nav-grup ul {
+  list-style: none; margin: 2px 0 8px 19px; padding: 0 0 0 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+.nav-grup a {
+  display: block; padding: 8px 12px; border-radius: 8px; color: #cfe5de;
+  text-decoration: none; font-size: 0.93rem;
+}
+.nav-grup a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.nav-grup a.active { background: #fff; color: #0b4f40; font-weight: 600; }
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.sidebar-avatar {
+  display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 50%;
+  background: #ffd166; color: #0a3a30; font-weight: 700; font-size: 0.85rem;
+}
+.sidebar-user-info { flex: 1; min-width: 0; }
+.sidebar-user-info strong {
+  display: block; overflow: hidden; color: #fff; font-size: 0.9rem; white-space: nowrap; text-overflow: ellipsis;
+}
+.sidebar-user-info span { display: block; font-size: 0.75rem; opacity: 0.75; }
+.sidebar-logout {
+  padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px;
+  background: none; color: #fff; font: inherit; font-size: 0.8rem; cursor: pointer;
+}
+.sidebar-logout:hover { background: rgba(255, 255, 255, 0.1); }
+.mobile-bar, .sidebar-backdrop { display: none; }
+.menu-toggle {
+  background: none; border: none; color: #fff; font-size: 1.5rem; line-height: 1; padding: 4px 8px; cursor: pointer;
+}
+
+/* Tablet & HP: sidebar menjadi drawer yang digeser dari kiri */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed; top: 0; left: 0; z-index: 1100; width: min(300px, 85vw);
+    transform: translateX(-100%); transition: transform 0.25s ease;
+  }
+  .sidebar.open { transform: none; box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25); }
+  .sidebar-close { display: block; }
+  .sidebar-backdrop { display: block; position: fixed; inset: 0; z-index: 1050; background: rgba(0, 0, 0, 0.4); }
+  .mobile-bar {
+    display: flex; align-items: center; gap: 8px; position: sticky; top: 0; z-index: 1000;
+    padding: 10px 12px; background: var(--primary); color: #fff;
+  }
+  .mobile-bar-judul { font-weight: 700; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .nav-chevron { transition: none; }
 }
 
 /* Card & layout */
@@ -135,17 +203,6 @@ tr.inactive td { color: var(--muted); }
 
   .container { margin: 12px auto; padding: 0 12px; }
   .card { padding: 16px; margin-bottom: 12px; }
-
-  /* Navbar jadi menu hamburger */
-  .topbar { padding: 12px 16px; gap: 0; position: sticky; top: 0; z-index: 1000; }
-  .menu-toggle { display: block; }
-  .topbar nav, .topbar .user { display: none; flex: 1 1 100%; }
-  .topbar.open nav { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
-  .topbar.open .user {
-    display: flex; justify-content: space-between;
-    margin-top: 8px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.25);
-  }
-  .topbar nav a { padding: 10px 12px; }
 
   /* Halaman absen */
   .absen { grid-template-columns: 1fr; gap: 0; }
