@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../auth.jsx";
+import Ikon from "../components/Ikon.jsx";
+import { NAMA_PUSKESMAS } from "../components/Sidebar.jsx";
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -8,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [lihatPassword, setLihatPassword] = useState(false);
 
   if (user) return <Navigate to="/" replace />;
 
@@ -27,7 +30,8 @@ export default function Login() {
   return (
     <div className="login-page">
       <form className="card login-card" onSubmit={handleSubmit}>
-        <h1>🏥 Absensi Puskesmas</h1>
+        <div className="login-logo"><Ikon nama="rumahSakit" /></div>
+        <h1>{NAMA_PUSKESMAS}</h1>
         <p className="muted">Masuk dengan NIP dan password Anda</p>
         {error && <div className="alert alert-error">{error}</div>}
         <label>
@@ -36,11 +40,27 @@ export default function Login() {
         </label>
         <label>
           Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <div className="input-password">
+            <input
+              type={lihatPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="icon-btn"
+              aria-label={lihatPassword ? "Sembunyikan password" : "Tampilkan password"}
+              onClick={() => setLihatPassword(!lihatPassword)}
+            >
+              <Ikon nama={lihatPassword ? "mataTutup" : "mata"} />
+            </button>
+          </div>
         </label>
         <button className="btn btn-primary" disabled={submitting}>
           {submitting ? "Memproses..." : "Masuk"}
         </button>
+        <p className="login-bantuan">Lupa password? Hubungi admin Tata Usaha.</p>
       </form>
     </div>
   );

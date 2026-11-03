@@ -134,15 +134,17 @@ export default function Absen() {
   return (
     <div className="absen">
       <div className="card absen-card">
-        <p className="muted">Selamat datang,</p>
-        <h2>{user.nama}</h2>
-        <p className="muted">{[user.jabatan, user.unit].filter(Boolean).join(" · ")}</p>
+        <div className="absen-hero">
+          <p className="muted">Selamat datang,</p>
+          <h2>{user.nama}</h2>
+          <p className="muted">{[user.jabatan, user.unit].filter(Boolean).join(" · ")}</p>
 
-        <div className="clock">
-          {now.toLocaleTimeString("id-ID", { timeZone: TZ })}
+          <div className="clock">
+            {now.toLocaleTimeString("id-ID", { timeZone: TZ })}
+          </div>
+          <p>{formatTanggal(info.tanggal)}</p>
+          <p className="muted small">Batas jam masuk: {info.batasMasuk} {TZ_LABEL}</p>
         </div>
-        <p>{formatTanggal(info.tanggal)}</p>
-        <p className="muted small">Batas jam masuk: {info.batasMasuk} {TZ_LABEL}</p>
 
         <LokasiCard posisi={posisi} error={lokasiError} kantor={info.kantor} />
 
