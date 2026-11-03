@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api.js";
+import { BarisSkeleton, useMemuat } from "../../components/Skeleton.jsx";
 import { thisMonthISO } from "../../format.jsx";
 
 const KOLOM = [
@@ -29,11 +30,14 @@ export default function Rekap() {
   const [bulan, setBulan] = useState(thisMonthISO());
   const [rows, setRows] = useState([]);
   const [error, setError] = useState("");
+  const [memuat, muat] = useMemuat();
 
   useEffect(() => {
     setError("");
-    api(`/absensi/rekap?bulan=${bulan}`).then((res) => setRows(res.data)).catch((err) => setError(err.message));
-  }, [bulan]);
+    muat(api(`/absensi/rekap?bulan=${bulan}`))
+      .then((res) => setRows(res.data))
+      .catch((err) => setError(err.message));
+  }, [bulan, muat]);
 
   return (
     <div className="card">
@@ -41,13 +45,13 @@ export default function Rekap() {
         <h2>Rekap Bulanan</h2>
         <div className="toolbar-actions">
           <input type="month" value={bulan} onChange={(e) => setBulan(e.target.value)} />
-          <button className="btn btn-secondary" onClick={() => downloadCsv(bulan, rows)} disabled={!rows.length}>
+          <button className="btn btn-secondary" onClick={() => downloadCsv(bulan, rows)} disabled={memuat || !rows.length}>
             Unduh CSV
           </button>
         </div>
       </div>
       {error && <div className="alert alert-error">{error}</div>}
-      <table>
+      <table aria-busy={memuat}>
         <thead>
           <tr>
             <th>NIP</th>
@@ -57,7 +61,8 @@ export default function Rekap() {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {memuat && <BarisSkeleton kolom={3 + KOLOM.length} />}
+          {!memuat && rows.map((r) => (
             <tr key={r.user_id}>
               <td>{r.nip}</td>
               <td>{r.nama}</td>

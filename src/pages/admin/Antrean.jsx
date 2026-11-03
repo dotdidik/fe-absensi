@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { api } from "../../api.js";
+import { BarisSkeleton, KartuSkeleton } from "../../components/Skeleton.jsx";
 import { STATUS_ANTREAN, StatusAntrean, usePolling } from "../../antrean.jsx";
 import { formatTanggal, todayISO } from "../../format.jsx";
 
@@ -78,7 +79,20 @@ export default function Antrean() {
       </p>
 
       {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}
-      {!data && <p>Memuat...</p>}
+      {!data && (
+        <>
+          <div className="poli-grid" aria-busy="true">
+            <KartuSkeleton jumlah={3} baris={3} />
+          </div>
+          <div className="card">
+            <table aria-busy="true">
+              <tbody>
+                <BarisSkeleton kolom={7} />
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {data && (
         <div className="poli-grid">

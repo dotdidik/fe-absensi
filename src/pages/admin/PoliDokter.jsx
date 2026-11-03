@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api.js";
+import { BarisSkeleton, KartuSkeleton, useMemuat } from "../../components/Skeleton.jsx";
 import { FotoTenagaMedis, JENIS_TENAGA_MEDIS, NAMA_HARI, kecilkanFoto } from "../../antrean.jsx";
 
 const POLI_BARU = { kode: "", nama: "", aktif: true };
@@ -11,8 +12,9 @@ export default function PoliDokter() {
   const [formPoli, setFormPoli] = useState(null);
   const [formTm, setFormTm] = useState(null);
   const [message, setMessage] = useState(null);
+  const [memuat, muat] = useMemuat();
 
-  const load = () => Promise.all([api("/poli").then(setPoli), api("/tenaga-medis").then(setTenagaMedis)]);
+  const load = () => muat(Promise.all([api("/poli").then(setPoli), api("/tenaga-medis").then(setTenagaMedis)]));
 
   useEffect(() => {
     load().catch((err) => setMessage({ type: "error", text: err.message }));
@@ -115,12 +117,13 @@ export default function PoliDokter() {
           <h2>Poli</h2>
           <button className="btn btn-primary" onClick={() => setFormPoli(POLI_BARU)}>+ Tambah Poli</button>
         </div>
-        <table className="table-stack">
+        <table className="table-stack" aria-busy={memuat}>
           <thead>
             <tr><th>Kode</th><th>Nama</th><th>Dokter/Bidan</th><th>Status</th><th></th></tr>
           </thead>
           <tbody>
-            {poli.map((p) => (
+            {memuat && <BarisSkeleton kolom={5} baris={3} />}
+            {!memuat && poli.map((p) => (
               <tr key={p.id} className={p.aktif ? "" : "inactive"}>
                 <td className="stack-title"><span className="poli-kode small-kode">{p.kode}</span></td>
                 <td data-label="Nama">{p.nama}</td>
@@ -132,7 +135,7 @@ export default function PoliDokter() {
                 </td>
               </tr>
             ))}
-            {!poli.length && <tr><td colSpan={5} className="center muted">Belum ada poli</td></tr>}
+            {!memuat && !poli.length && <tr><td colSpan={5} className="center muted">Belum ada poli</td></tr>}
           </tbody>
         </table>
       </div>
@@ -205,8 +208,9 @@ export default function PoliDokter() {
             + Tambah Dokter / Bidan
           </button>
         </div>
-        <div className="tm-grid">
-          {tenagaMedis.map((t) => (
+        <div className="tm-grid" aria-busy={memuat}>
+          {memuat && <KartuSkeleton jumlah={3} avatar baris={2} />}
+          {!memuat && tenagaMedis.map((t) => (
             <div key={t.id} className={`tm-card ${t.aktif ? "" : "inactive"}`}>
               <FotoTenagaMedis tenagaMedis={t} size={64} />
               <div className="tm-info">
@@ -225,7 +229,7 @@ export default function PoliDokter() {
               </div>
             </div>
           ))}
-          {!tenagaMedis.length && <p className="muted">Belum ada dokter/bidan. {!poli.length && "Tambahkan poli terlebih dahulu."}</p>}
+          {!memuat && !tenagaMedis.length && <p className="muted">Belum ada dokter/bidan. {!poli.length && "Tambahkan poli terlebih dahulu."}</p>}
         </div>
       </div>
     </>

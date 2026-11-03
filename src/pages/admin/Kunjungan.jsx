@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api.js";
+import { BarisSkeleton, useMemuat } from "../../components/Skeleton.jsx";
 import { STATUS_ANTREAN, StatusAntrean } from "../../antrean.jsx";
 import { todayISO } from "../../format.jsx";
 
@@ -15,6 +16,7 @@ export default function Kunjungan() {
   const [halaman, setHalaman] = useState(1);
   const [hasil, setHasil] = useState(null);
   const [error, setError] = useState("");
+  const [memuat, muat] = useMemuat();
 
   useEffect(() => {
     api("/poli").then(setPoli).catch(() => {});
@@ -23,8 +25,8 @@ export default function Kunjungan() {
   useEffect(() => {
     const params = new URLSearchParams({ ...cari, halaman });
     setError("");
-    api(`/admin/antrean/riwayat?${params}`).then(setHasil).catch((err) => setError(err.message));
-  }, [cari, halaman]);
+    muat(api(`/admin/antrean/riwayat?${params}`)).then(setHasil).catch((err) => setError(err.message));
+  }, [cari, halaman, muat]);
 
   const ubah = (key) => (e) => setFilter({ ...filter, [key]: e.target.value });
 
@@ -64,9 +66,9 @@ export default function Kunjungan() {
       </form>
 
       {error && <div className="alert alert-error">{error}</div>}
-      {hasil && <p className="muted small">{hasil.total} kunjungan ditemukan</p>}
+      <p className="muted small">{memuat ? "Memuat data..." : hasil && `${hasil.total} kunjungan ditemukan`}</p>
 
-      <table className="table-stack">
+      <table className="table-stack" aria-busy={memuat}>
         <thead>
           <tr>
             <th>Tanggal</th>
@@ -80,7 +82,8 @@ export default function Kunjungan() {
           </tr>
         </thead>
         <tbody>
-          {hasil?.data.map((a) => (
+          {memuat && <BarisSkeleton kolom={8} />}
+          {!memuat && hasil?.data.map((a) => (
             <tr key={a.id}>
               <td className="stack-title">{formatTgl(a.tanggal)}</td>
               <td data-label="No.">{a.kode_antrean}</td>
@@ -102,7 +105,7 @@ export default function Kunjungan() {
               <td data-label="Keluhan" className="wrap">{a.keluhan || "-"}</td>
             </tr>
           ))}
-          {hasil && !hasil.data.length && (
+          {!memuat && hasil && !hasil.data.length && (
             <tr>
               <td colSpan={8} className="center muted">Tidak ada kunjungan dengan filter ini</td>
             </tr>
@@ -112,9 +115,9 @@ export default function Kunjungan() {
 
       {hasil && hasil.total > hasil.perHalaman && (
         <div className="pagination">
-          <button className="btn btn-secondary" disabled={halaman <= 1} onClick={() => setHalaman(halaman - 1)}>‹ Sebelumnya</button>
+          <button className="btn btn-secondary" disabled={memuat || halaman <= 1} onClick={() => setHalaman(halaman - 1)}>‹ Sebelumnya</button>
           <span>Halaman {halaman} dari {jumlahHalaman}</span>
-          <button className="btn btn-secondary" disabled={halaman >= jumlahHalaman} onClick={() => setHalaman(halaman + 1)}>Berikutnya ›</button>
+          <button className="btn btn-secondary" disabled={memuat || halaman >= jumlahHalaman} onClick={() => setHalaman(halaman + 1)}>Berikutnya ›</button>
         </div>
       )}
     </div>

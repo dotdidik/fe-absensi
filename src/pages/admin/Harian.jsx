@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api.js";
+import { BarisSkeleton, useMemuat } from "../../components/Skeleton.jsx";
 import { STATUS_LABEL, StatusBadge, formatJam, formatTanggal, todayISO } from "../../format.jsx";
 import { formatKoordinat, mapsUrl } from "../../geo.js";
 
@@ -20,8 +21,9 @@ export default function Harian() {
   const [rows, setRows] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [message, setMessage] = useState(null);
+  const [memuat, muat] = useMemuat();
 
-  const load = () => api(`/absensi/harian?tanggal=${tanggal}`).then(setRows);
+  const load = () => muat(api(`/absensi/harian?tanggal=${tanggal}`)).then(setRows);
 
   useEffect(() => {
     load().catch((err) => setMessage({ type: "error", text: err.message }));
@@ -66,7 +68,7 @@ export default function Harian() {
         <div className="summary">
           {[...Object.keys(STATUS_LABEL), "kosong"].map((key) => (
             <div key={key} className={`summary-item badge-${key}`}>
-              <strong>{ringkasan[key] || 0}</strong>
+              <strong>{memuat ? "–" : ringkasan[key] || 0}</strong>
               <span>{STATUS_LABEL[key] || "Belum absen"}</span>
             </div>
           ))}
@@ -74,7 +76,7 @@ export default function Harian() {
 
         {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}
 
-        <table>
+        <table aria-busy={memuat}>
           <thead>
             <tr>
               <th>NIP</th>
@@ -90,7 +92,8 @@ export default function Harian() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {memuat && <BarisSkeleton kolom={10} />}
+            {!memuat && rows.map((r) => (
               <tr key={r.user_id}>
                 <td>{r.nip}</td>
                 <td>{r.nama}</td>

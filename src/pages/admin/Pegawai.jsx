@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api.js";
+import { BarisSkeleton, useMemuat } from "../../components/Skeleton.jsx";
 
 const EMPTY_FORM = { nip: "", nama: "", jabatan: "", unit: "", role: "pegawai", aktif: true, password: "" };
 
@@ -7,8 +8,9 @@ export default function Pegawai() {
   const [rows, setRows] = useState([]);
   const [form, setForm] = useState(null);
   const [message, setMessage] = useState(null);
+  const [memuat, muat] = useMemuat();
 
-  const load = () => api("/pegawai").then(setRows);
+  const load = () => muat(api("/pegawai")).then(setRows);
 
   useEffect(() => {
     load().catch((err) => setMessage({ type: "error", text: err.message }));
@@ -83,7 +85,7 @@ export default function Pegawai() {
           <button className="btn btn-primary" onClick={() => setForm(EMPTY_FORM)}>+ Tambah Pegawai</button>
         </div>
         {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}
-        <table>
+        <table aria-busy={memuat}>
           <thead>
             <tr>
               <th>NIP</th>
@@ -96,7 +98,8 @@ export default function Pegawai() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {memuat && <BarisSkeleton kolom={7} />}
+            {!memuat && rows.map((r) => (
               <tr key={r.id} className={r.aktif ? "" : "inactive"}>
                 <td>{r.nip}</td>
                 <td>{r.nama}</td>
